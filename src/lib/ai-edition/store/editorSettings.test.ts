@@ -74,6 +74,12 @@ describe("getEditorSettings", () => {
 		expect(snap.cursor.size).toBe(DEFAULT_CURSOR_SIZE);
 	});
 
+	it("preserves a small cursor size when reopening a project", () => {
+		const saved = patchEditorSettings(baseDoc, { cursor: { size: 0.5 } });
+		const reopened = getEditorSettings(JSON.parse(JSON.stringify(saved)));
+		expect(reopened.cursor.size).toBe(0.5);
+	});
+
 	it("reads every appearance number into its bound, whatever wrote it", () => {
 		const snap = getEditorSettings({
 			...baseDoc,

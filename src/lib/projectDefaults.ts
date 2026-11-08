@@ -308,7 +308,7 @@ export const SETTING_BOUNDS = {
 	webcamBlurIntensity: [0, 1],
 	// 1.5 is the floor: nothing smaller reads in a demo. At 6 the arrow is 164 px tall in a
 	// 1080p export, eight times the system one.
-	cursorSize: [1.5, 6],
+	cursorSize: [0.5, 6],
 	cursorSmoothing: [0, 1],
 	cursorMotionBlur: [0, 1],
 	// Past about 4.2 the arrow shrank to nothing on every click.

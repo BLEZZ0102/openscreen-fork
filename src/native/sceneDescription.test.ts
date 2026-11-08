@@ -1388,7 +1388,7 @@ describe("buildSceneDescription.settings mapping", () => {
 	it("maps the cursor sub-settings", () => {
 		const doc = makeDoc({
 			legacyEditor: {
-				cursorSize: 2.5,
+				cursorSize: 0.5,
 				cursorSmoothing: 0.9,
 				cursorMotionBlur: 0.5,
 				cursorClickBounce: 1.5,
@@ -1397,7 +1397,7 @@ describe("buildSceneDescription.settings mapping", () => {
 			},
 		});
 		const cursor = buildSceneDescription(doc).cursor;
-		expect(cursor.size).toBe(2.5);
+		expect(cursor.size).toBe(0.5);
 		expect(cursor.smoothing).toBe(0.9);
 		expect(cursor.motionBlur).toBe(0.5);
 		expect(cursor.clickBounce).toBe(1.5);

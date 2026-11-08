@@ -183,11 +183,12 @@ describe("CursorPane cursor types", () => {
 });
 
 describe("CursorPane size", () => {
-	// Named steps stopped at 2.75; people asked for at least twice that.
-	it("is a slider from the default up to four times it", () => {
+	it("can shrink the cursor below its default size", () => {
 		renderWithCursor({ cursorSize: 4.5 });
 		const slider = screen.getByRole("slider", { name: "Size" }) as HTMLInputElement;
-		expect([slider.min, slider.max, slider.value]).toEqual(["1.5", "6", "4.5"]);
+		expect([slider.min, slider.max, slider.value]).toEqual(["0.5", "6", "4.5"]);
+		fireEvent.change(slider, { target: { value: "0.5" } });
+		expect(useProjectStore.getState().document?.legacyEditor?.cursorSize).toBe(0.5);
 	});
 });
 
