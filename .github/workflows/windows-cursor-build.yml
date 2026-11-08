@@ -24,7 +24,12 @@ jobs:
           test "$(git rev-parse HEAD:electron/native/whisper-stt)" = 5b710f3090ac7af023e1876d1f4a98f0508a1925
           test "$(git rev-parse HEAD:scripts/build-whisper-stt.sh)" = 23b33ce3e3872aaac558bb779a8fb5d7655f9ef2
           test "$(git rev-parse HEAD:.github/workflows/build-whisper-stt.yml)" = 86fd52df7139b71c43773480259c02afe805fa34
-          gh run download 40768277585 --repo getopenscreen/openscreen --name whisper-stt-win32-x64 --dir electron/native/bin/win32-x64
+          stage="$(mktemp -d)"
+          trap 'rm -rf "$stage"' EXIT
+          gh run download 40768277585 --repo getopenscreen/openscreen --name whisper-stt-win32-x64 --dir "$stage"
+          mkdir -p electron/native/bin/win32-x64
+          tar -xzf "$stage/whisper-stt-win32-x64.tar.gz" -C electron/native/bin/win32-x64 --strip-components=1
+          test -f electron/native/bin/win32-x64/whisper-stt-server.exe
 
       - name: Set a separate installation identity for the fork
         shell: pwsh
