@@ -137,6 +137,7 @@ import {
 } from "../recording/nativeMacCaptureStop";
 import {
 	isSalvageableFragmentedCapture,
+	NATIVE_WINDOWS_FRAGMENTED_CONTAINER,
 	NATIVE_WINDOWS_SALVAGEABLE_OUTPUT_BYTES,
 	readMicrophoneDefaulted,
 	readMicrophoneNotFound,
@@ -147,6 +148,10 @@ import {
 	terminateNativeWindowsCapture,
 	waitForNativeWindowsCaptureStop,
 } from "../recording/nativeWindowsCaptureStop";
+import {
+	alignWindowsCursorTiming,
+	readWindowsCursorTimeAnchors,
+} from "../recording/nativeWindowsCursorTiming";
 import { removeEmptyCaptureOutput } from "../recording/removeEmptyCaptureOutput";
 import { patchWebmDurationOnDisk } from "../recording/webm-duration";
 import { reindexRecordingOnDisk } from "../recording/webm-seek-index";
@@ -3642,6 +3647,16 @@ export function registerIpcHandlers(
 			if (cursorCaptureMode === "editable-overlay") {
 				compactPendingCursorTelemetryPauseRanges(nativeWindowsPauseRanges);
 				shiftPendingCursorTelemetry(nativeWindowsCursorOffsetMs);
+				if (
+					pendingCursorRecordingData &&
+					nativeWindowsCaptureContainer === NATIVE_WINDOWS_FRAGMENTED_CONTAINER
+				) {
+					const anchors = await readWindowsCursorTimeAnchors(screenVideoPath);
+					pendingCursorRecordingData = alignWindowsCursorTiming(
+						pendingCursorRecordingData,
+						anchors,
+					);
+				}
 				await writePendingCursorTelemetry(screenVideoPath);
 			}
 			let webcamVideoPath: string | undefined;
