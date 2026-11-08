@@ -1,0 +1,41 @@
+name: Build Windows cursor installer
+
+on:
+  push:
+    branches: [build/windows-smaller-cursor-size]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  windows-x64:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      - name: Stage the matching Windows speech recognition helper
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:electron/native/whisper-stt)" = 5b710f3090ac7af023e1876d1f4a98f0508a1925
+          test "$(git rev-parse HEAD:scripts/build-whisper-stt.sh)" = 23b33ce3e3872aaac558bb779a8fb5d7655f9ef2
+          test "$(git rev-parse HEAD:.github/workflows/build-whisper-stt.yml)" = 86fd52df7139b71c43773480259c02afe805fa34
+          gh run download 40768277585 --repo getopenscreen/openscreen --name whisper-stt-win32-x64 --dir electron/native/bin/win32-x64
+
+      - name: Set a separate installation identity for the fork
+        shell: pwsh
+        run: |
+          node -e 'const fs = require("node:fs"); const file = "electron-builder.json5"; const config = require("json5").parse(fs.readFileSync(file, "utf8")); config.appId = "com.blezz0102.openscreenfork"; config.productName = "OpenScreenFork"; config.publish = null; fs.writeFileSync(file, JSON.stringify(config));'
+
+      - name: Build the Windows x64 installer
+        run: npm run build:win -- --publish never
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: openscreen-fork-windows-x64
+          path: release/**/OpenScreenFork.Setup.*-x64.exe
+          if-no-files-found: error
